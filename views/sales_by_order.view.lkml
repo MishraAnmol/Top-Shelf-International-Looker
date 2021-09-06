@@ -63,7 +63,7 @@ view: sales_by_order {
     sql: ${TABLE}."CUSTOMER_TITLE" ;;
   }
 
-  dimension: customer_type {
+  dimension: customer_channel {
     type: string
     sql: ${TABLE}."CUSTOMER_TYPE" ;;
   }
@@ -274,25 +274,25 @@ view: sales_by_order {
   measure: totalsalesamount  {
     type: sum
     sql: ${sales_amount_aud} ;;
-    drill_fields: [customer_title, customer_type, product_title, brand_type, brand_name]
+    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name]
   }
 
   measure: totalsalesquantity  {
     type: sum
     sql: ${sales_quantity} ;;
-    drill_fields: [customer_title, customer_type, product_title, brand_type, brand_name]
+    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name]
   }
 
   measure: totalcostamount  {
     type: sum
     sql: ${total_cost_amount_aud} ;;
-    drill_fields: [customer_title, customer_type, product_title, brand_type, brand_name]
+    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name]
   }
 
   measure: operatingcostamount  {
     type: sum
     sql: ${operating_cost_amount_aud} ;;
-    drill_fields: [customer_title, customer_type, product_title, brand_type, brand_name]
+    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name]
   }
 
 }
