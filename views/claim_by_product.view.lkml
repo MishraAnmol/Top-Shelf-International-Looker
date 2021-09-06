@@ -185,4 +185,10 @@ view: claim_by_product {
     type: count
     drill_fields: [brand_name]
   }
+
+  measure: total_claim_amount {
+    type: sum
+    sql: ${claim_amount_aud} ;;
+    drill_fields: [product_id, product_title, trans_date]
+  }
 }
