@@ -189,6 +189,7 @@ view: claim_by_product {
   measure: total_claim_amount {
     type: sum
     sql: ${claim_amount_aud} ;;
+    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
     drill_fields: [product_id, product_title, trans_date]
   }
 }
