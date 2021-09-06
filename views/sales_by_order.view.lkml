@@ -206,7 +206,7 @@ view: sales_by_order {
     sql: ${TABLE}."PRODUCT_TITLE" ;;
   }
 
-  dimension: province_code {
+  dimension: state_code {
     type: string
     sql: ${TABLE}."PROVINCE_CODE" ;;
   }
