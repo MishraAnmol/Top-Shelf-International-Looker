@@ -329,4 +329,18 @@ view: sales_by_order {
     drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, total_sales_amount, total_cost_amount, claim_by_product.total_claim_amount]
   }
 
+  measure: gross_margin_wo_excise  {
+    sql: CASE WHEN ${customer_channel}='Direct 3rd Party' THEN '000'
+              ELSE (${total_sales_amount}-${operating_cost_amount})*100/${total_sales_amount}
+              END;;
+    value_format: "0.00\%"
+    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, total_sales_amount, operating_cost_amount  ]
+  }
+
+  measure: blended_gross_margin_wo_excise  {
+    sql: (${sales_by_order.total_sales_amount}-${sales_by_order.operating_cost_amount}-${claim_by_product.total_claim_amount})*100/${total_sales_amount} ;;
+    value_format: "0.00\%"
+    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, total_sales_amount, operating_cost_amount, claim_by_product.total_claim_amount]
+  }
+
 }
