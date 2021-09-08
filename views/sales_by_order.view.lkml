@@ -92,6 +92,16 @@ view: sales_by_order {
     sql: ${TABLE}."FIRST_NAME" ;;
   }
 
+  dimension: fiscal_quarter {
+    type: string
+    sql: ${TABLE}."FISCAL_QUARTER" ;;
+  }
+
+  dimension: fiscal_year {
+    type: number
+    sql: ${TABLE}."FISCAL_YEAR" ;;
+  }
+
   dimension: invoice_code {
     type: string
     sql: ${TABLE}."INVOICE_CODE" ;;
@@ -274,43 +284,49 @@ view: sales_by_order {
     drill_fields: [first_name, last_name, brand_name]
   }
 
+  measure: order_count {
+    type: count_distinct
+    sql: ${customer_order_id} ;;
+    drill_fields: [first_name, last_name, brand_name]
+  }
+
   measure: total_sales_amount  {
     type: sum
     sql: ${sales_amount_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name]
+    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, sales_amount_aud]
   }
 
   measure: total_sales_quantity  {
     type: sum
     sql: ${sales_quantity} ;;
-    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name]
+    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, sales_quantity]
   }
 
   measure: total_cost_amount  {
     type: sum
     sql: ${total_cost_amount_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name]
+    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, total_cost_amount_aud]
   }
 
   measure: operating_cost_amount  {
     type: sum
     sql: ${operating_cost_amount_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name]
+    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, operating_cost_amount_aud]
   }
 
   measure: gross_margin  {
     sql: (${total_sales_amount}-${total_cost_amount})*100/${total_sales_amount} ;;
     value_format: "0.00\%"
-    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name]
+    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, total_sales_amount, total_cost_amount  ]
   }
 
   measure: blended_gross_margin  {
     sql: (${sales_by_order.total_sales_amount}-${sales_by_order.total_cost_amount}-${claim_by_product.total_claim_amount})*100/${total_sales_amount} ;;
     value_format: "0.00\%"
-    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name]
+    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, total_sales_amount, total_cost_amount, claim_by_product.total_claim_amount]
   }
 
 }
