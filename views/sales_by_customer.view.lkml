@@ -303,7 +303,6 @@ view: sales_by_customer {
   measure: total_credit_quantity  {
     type: sum
     sql: ${credit_line_quantity} ;;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
     drill_fields: [ customer_title, customer_channel, product_title, brand_type, brand_name, operating_cost_amount_aud]
   }
 
