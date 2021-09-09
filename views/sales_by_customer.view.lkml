@@ -46,6 +46,7 @@ view: sales_by_customer {
   dimension: credit_line_amount_aud {
     type: number
     sql: ${TABLE}."CREDIT_LINE_AMOUNT" ;;
+    value_format: "$#.00;($#.00)"
   }
 
   dimension: credit_line_quantity {
@@ -174,6 +175,7 @@ view: sales_by_customer {
   dimension: operating_cost_amount_aud {
     type: number
     sql: ${TABLE}."OPERATING_COST_AMOUNT_AUD" ;;
+    value_format: "$#.00;($#.00)"
   }
 
   dimension: phone {
@@ -214,6 +216,7 @@ view: sales_by_customer {
   dimension: sales_amount_aud {
     type: number
     sql: ${TABLE}."SALES_AMOUNT_AUD" ;;
+    value_format: "$#.00;($#.00)"
   }
 
   dimension: sales_quantity {
@@ -239,6 +242,7 @@ view: sales_by_customer {
   dimension: total_cost_amount_aud {
     type: number
     sql: ${TABLE}."TOTAL_COST_AMOUNT_AUD" ;;
+    value_format: "$#.00;($#.00)"
   }
 
   dimension: unit_type {
@@ -307,14 +311,14 @@ view: sales_by_customer {
   }
 
   measure: gross_margin  {
-    sql: ((${total_sales_amount}+${total_credit_amount})-${total_cost_amount})*100/(${total_sales_amount}+${total_credit_amount}) ;;
+    sql: (${total_sales_amount}-${total_credit_amount}-${total_cost_amount})*100/(${total_sales_amount}-${total_credit_amount}) ;;
     value_format: "0.00\%"
     drill_fields: [customer_title, customer_channel, product_id, product_title, brand_type, brand_name,  total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise ]
   }
 
   measure: gross_margin_wo_excise  {
     sql: CASE WHEN ${customer_channel}='Direct 3rd Party' THEN NULL
-              ELSE ((${total_sales_amount}+${total_credit_amount})-${total_cost_amount_wo_excise})*100/(${total_sales_amount}+${total_credit_amount})
+              ELSE (${total_sales_amount}-${total_credit_amount}-${total_cost_amount_wo_excise})*100/(${total_sales_amount}-${total_credit_amount})
               END;;
     value_format: "0.00\%"
     drill_fields: [customer_title, customer_channel, product_id, product_title, brand_type, brand_name, total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise  ]
