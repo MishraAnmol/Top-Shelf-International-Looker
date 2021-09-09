@@ -315,7 +315,7 @@ view: sales_by_customer {
 
   measure: gross_margin_wo_excise  {
     sql: CASE WHEN ${customer_channel}='Direct 3rd Party' THEN NULL
-              ELSE ((${total_sales_amount}+${total_credit_amount})-${total_cost_amount_wo_excise})*100/$(${total_sales_amount}+${total_credit_amount})
+              ELSE ((${total_sales_amount}+${total_credit_amount})-${total_cost_amount_wo_excise})*100/(${total_sales_amount}+${total_credit_amount})
               END;;
     value_format: "0.00\%"
     drill_fields: [customer_title, customer_channel, product_id, product_title, brand_type, brand_name, total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise  ]
