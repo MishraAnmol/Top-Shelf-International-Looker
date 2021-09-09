@@ -310,10 +310,17 @@ view: sales_by_customer {
     drill_fields: [ customer_title, customer_channel, product_title, brand_type, brand_name, operating_cost_amount_aud]
   }
 
+  measure: net_sales_amount  {
+    type: sum
+    sql:${sales_amount_aud}-${credit_line_amount_aud};;
+    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name, total_sales_amount, total_credit_amount ]
+  }
+
   measure: gross_margin  {
     sql: (${total_sales_amount}-${total_credit_amount}-${total_cost_amount})*100/(${total_sales_amount}-${total_credit_amount}) ;;
     value_format: "0.00\%"
-    drill_fields: [customer_title, customer_channel, product_id, product_title, brand_type, brand_name,  total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise ]
+    drill_fields: [customer_title, customer_channel, product_id, product_title, product_group_code, brand_type, brand_name, vessel, total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise ]
   }
 
   measure: gross_margin_wo_excise  {
@@ -321,7 +328,7 @@ view: sales_by_customer {
               ELSE (${total_sales_amount}-${total_credit_amount}-${total_cost_amount_wo_excise})*100/(${total_sales_amount}-${total_credit_amount})
               END;;
     value_format: "0.00\%"
-    drill_fields: [customer_title, customer_channel, product_id, product_title, brand_type, brand_name, total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise  ]
+    drill_fields: [customer_title, customer_channel, product_id, product_title, product_group_code, brand_type, brand_name, vessel, total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise  ]
   }
 
 }
