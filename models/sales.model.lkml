@@ -25,3 +25,4 @@ explore: sales_by_order {
     relationship: one_to_one
   }
 }
+explore: sales_by_customer {}
