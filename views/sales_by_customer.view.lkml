@@ -1,5 +1,5 @@
-view: sales_by_order {
-  sql_table_name: "SALES"."SALES_BY_ORDER"
+view: sales_by_customer {
+  sql_table_name: "SALES"."SALES_BY_CUSTOMER"
     ;;
 
   dimension: accepts_marketing {
@@ -43,6 +43,16 @@ view: sales_by_order {
     sql: ${TABLE}."COUNTRY_CODE" ;;
   }
 
+  dimension: credit_line_amount_aud {
+    type: number
+    sql: ${TABLE}."CREDIT_LINE_AMOUNT" ;;
+  }
+
+  dimension: credit_line_quantity {
+    type: number
+    sql: ${TABLE}."CREDIT_LINE_QUANTITY" ;;
+  }
+
   dimension: customer_code {
     type: string
     sql: ${TABLE}."CUSTOMER_CODE" ;;
@@ -51,11 +61,6 @@ view: sales_by_order {
   dimension: customer_id {
     type: number
     sql: ${TABLE}."CUSTOMER_ID" ;;
-  }
-
-  dimension: customer_order_id {
-    type: number
-    sql: ${TABLE}."CUSTOMER_ORDER_ID" ;;
   }
 
   dimension: customer_title {
@@ -102,11 +107,6 @@ view: sales_by_order {
     sql: ${TABLE}."FISCAL_YEAR" ;;
   }
 
-  dimension: invoice_code {
-    type: string
-    sql: ${TABLE}."INVOICE_CODE" ;;
-  }
-
   dimension_group: invoice {
     type: time
     timeframes: [
@@ -120,11 +120,6 @@ view: sales_by_order {
     convert_tz: no
     datatype: date
     sql: ${TABLE}."INVOICE_DATE" ;;
-  }
-
-  dimension: invoice_number {
-    type: number
-    sql: ${TABLE}."INVOICE_NUMBER" ;;
   }
 
   dimension: item_code {
@@ -179,7 +174,6 @@ view: sales_by_order {
   dimension: operating_cost_amount_aud {
     type: number
     sql: ${TABLE}."OPERATING_COST_AMOUNT_AUD" ;;
-    value_format: "$#.00;($#.00)"
   }
 
   dimension: phone {
@@ -202,11 +196,6 @@ view: sales_by_order {
     sql: ${TABLE}."PRODUCT_GROUP_CODE" ;;
   }
 
-  dimension: upper_product_group_code {
-    type: string
-    sql: UPPER${product_group_code};;
-  }
-
   dimension: product_id {
     type: number
     sql: ${TABLE}."PRODUCT_ID" ;;
@@ -217,7 +206,7 @@ view: sales_by_order {
     sql: ${TABLE}."PRODUCT_TITLE" ;;
   }
 
-  dimension: state_code {
+  dimension: province_code {
     type: string
     sql: ${TABLE}."PROVINCE_CODE" ;;
   }
@@ -225,7 +214,6 @@ view: sales_by_order {
   dimension: sales_amount_aud {
     type: number
     sql: ${TABLE}."SALES_AMOUNT_AUD" ;;
-    value_format: "$#.00;($#.00)"
   }
 
   dimension: sales_quantity {
@@ -236,11 +224,6 @@ view: sales_by_order {
   dimension: size {
     type: string
     sql: ${TABLE}."SIZE" ;;
-  }
-
-  dimension: source_stream {
-    type: string
-    sql: ${TABLE}."SOURCE_STREAM" ;;
   }
 
   dimension: state {
@@ -256,7 +239,6 @@ view: sales_by_order {
   dimension: total_cost_amount_aud {
     type: number
     sql: ${TABLE}."TOTAL_COST_AMOUNT_AUD" ;;
-    value_format: "$#.00;($#.00)"
   }
 
   dimension: unit_type {
@@ -281,41 +263,62 @@ view: sales_by_order {
 
   measure: count {
     type: count
-    drill_fields: [first_name, last_name, brand_name]
-  }
-
-  measure: order_count {
-    type: count_distinct
-    sql: ${customer_order_id} ;;
-    drill_fields: [first_name, last_name, brand_name]
+    drill_fields: [brand_name, first_name, last_name]
   }
 
   measure: total_sales_amount  {
     type: sum
     sql: ${sales_amount_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, sales_amount_aud]
+    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name, sales_amount_aud]
   }
 
   measure: total_sales_quantity  {
     type: sum
     sql: ${sales_quantity} ;;
-    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, sales_quantity]
+    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name, sales_quantity]
   }
 
   measure: total_cost_amount  {
     type: sum
     sql: ${total_cost_amount_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, total_cost_amount_aud]
+    drill_fields: [ customer_title, customer_channel, product_title, brand_type, brand_name, total_cost_amount_aud]
   }
 
   measure: total_cost_amount_wo_excise  {
     type: sum
     sql: ${operating_cost_amount_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, operating_cost_amount_aud]
+    drill_fields: [ customer_title, customer_channel, product_title, brand_type, brand_name, operating_cost_amount_aud]
   }
 
+  measure: total_credit_amount  {
+    type: sum
+    sql: ${credit_line_amount_aud} ;;
+    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    drill_fields: [ customer_title, customer_channel, product_title, brand_type, brand_name, credit_line_amount_aud]
+  }
+
+  measure: total_credit_quantity  {
+    type: sum
+    sql: ${credit_line_quantity} ;;
+    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    drill_fields: [ customer_title, customer_channel, product_title, brand_type, brand_name, operating_cost_amount_aud]
+  }
+
+  measure: gross_margin  {
+    sql: ((${total_sales_amount}+${total_credit_amount})-${total_cost_amount})*100/(${total_sales_amount}+${total_credit_amount}) ;;
+    value_format: "0.00\%"
+    drill_fields: [customer_title, customer_channel, product_id, product_title, brand_type, brand_name,  total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise ]
+  }
+
+  measure: gross_margin_wo_excise  {
+    sql: CASE WHEN ${customer_channel}='Direct 3rd Party' THEN NULL
+              ELSE ((${total_sales_amount}+${total_credit_amount})-${total_cost_amount_wo_excise})*100/$(${total_sales_amount}+${total_credit_amount})
+              END;;
+    value_format: "0.00\%"
+    drill_fields: [customer_title, customer_channel, product_id, product_title, brand_type, brand_name, total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise  ]
+  }
 
 }
