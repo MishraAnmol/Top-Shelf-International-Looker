@@ -26,3 +26,5 @@ explore: sales_by_order {
   }
 }
 explore: sales_by_customer {}
+
+explore: alm_sales_by_order {}

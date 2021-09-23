@@ -219,6 +219,12 @@ view: sales_by_customer {
     value_format: "$#.00;($#.00)"
   }
 
+  dimension: discounted_sales_amount_aud {
+    type: number
+    sql: ${TABLE}."DISCOUNTED_SALES_AMOUNT_AUD" ;;
+    value_format: "$#.00;($#.00)"
+  }
+
   dimension: sales_quantity {
     type: number
     sql: ${TABLE}."SALES_QUANTITY" ;;
@@ -277,6 +283,13 @@ view: sales_by_customer {
     drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name, sales_amount_aud]
   }
 
+  measure: discounted_total_sales_amount  {
+    type: sum
+    sql: ${discounted_sales_amount_aud} ;;
+    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name, sales_amount_aud]
+  }
+
   measure: total_sales_quantity  {
     type: sum
     sql: ${sales_quantity} ;;
@@ -312,23 +325,37 @@ view: sales_by_customer {
 
   measure: net_sales_amount  {
     type: sum
-    sql:${sales_amount_aud}-${credit_line_amount_aud};;
+    sql:${discounted_sales_amount_aud}-${credit_line_amount_aud};;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
     drill_fields: [customer_title, customer_channel, product_title, brand_type, brand_name, total_sales_amount, total_credit_amount ]
   }
 
   measure: gross_margin  {
-    sql: (${total_sales_amount}-${total_credit_amount}-${total_cost_amount})*100/(${total_sales_amount}-${total_credit_amount}) ;;
+    sql: (${total_sales_amount}-${total_cost_amount})*100/${total_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [customer_title, customer_channel, product_id, product_title, product_group_code, brand_type, brand_name, vessel, total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise ]
   }
 
   measure: gross_margin_wo_excise  {
     sql: CASE WHEN ${customer_channel}='Direct 3rd Party' THEN NULL
-              ELSE (${total_sales_amount}-${total_credit_amount}-${total_cost_amount_wo_excise})*100/(${total_sales_amount}-${total_credit_amount})
+              ELSE (${total_sales_amount}-${total_cost_amount_wo_excise})*100/${total_sales_amount}
               END;;
     value_format: "0.00\%"
     drill_fields: [customer_title, customer_channel, product_id, product_title, product_group_code, brand_type, brand_name, vessel, total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise  ]
+  }
+
+  measure: blended_gross_margin  {
+    sql: (${discounted_total_sales_amount}-${total_credit_amount}-${total_cost_amount})*100/(${discounted_total_sales_amount}-${total_credit_amount}) ;;
+    value_format: "0.00\%"
+    drill_fields: [customer_title, customer_channel, product_id, product_title, product_group_code, brand_type, brand_name, vessel, total_sales_amount,discounted_total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise ]
+  }
+
+  measure: blended_gross_margin_wo_excise  {
+    sql: CASE WHEN ${customer_channel}='Direct 3rd Party' THEN NULL
+              ELSE (${discounted_total_sales_amount}-${total_credit_amount}-${total_cost_amount_wo_excise})*100/(${discounted_total_sales_amount}-${total_credit_amount})
+              END;;
+    value_format: "0.00\%"
+    drill_fields: [customer_title, customer_channel, product_id, product_title, product_group_code, brand_type, brand_name, vessel, total_sales_amount,discounted_total_sales_amount, total_credit_amount, total_cost_amount, total_cost_amount_wo_excise  ]
   }
 
 }
