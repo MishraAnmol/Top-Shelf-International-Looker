@@ -161,6 +161,11 @@ view: alm_sales_by_order {
     sql: ${TABLE}."QTY_ORDERED" ;;
   }
 
+  dimension: qty_per_case {
+    type: number
+    sql: ${TABLE}."QTY_PER_CASE" ;;
+  }
+
   dimension: qty_supplied {
     type: number
     sql: ${TABLE}."QTY_SUPPLIED" ;;
@@ -196,6 +201,11 @@ view: alm_sales_by_order {
     sql: ${TABLE}."TRANS_DATE" ;;
   }
 
+  dimension: trans_date_raw {
+    datatype: date
+    sql: ${TABLE}."TRANS_DATE" ;;
+  }
+
   dimension: trans_type {
     type: string
     sql: ${TABLE}."TRANS_TYPE" ;;
@@ -223,6 +233,35 @@ view: alm_sales_by_order {
 
   measure: count {
     type: count
-    drill_fields: [outlet_name, group_name]
+    drill_fields: [group_name, outlet_name]
   }
+
+  measure: total_quantity_supplied  {
+    type: sum
+    sql: ${qty_supplied} ;;
+    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    drill_fields: [invoice_number, outlet_id, outlet_name, product_code,product_description, qty_ordered, qty_supplied, qty_per_case, wsale_value, base_price, total_quantity_supplied, total_wholesale_amount]
+  }
+
+  measure: total_wholesale_amount  {
+    type: sum
+    sql: ${wsale_value} ;;
+    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    drill_fields: [invoice_number, outlet_id, outlet_name, product_code,product_description, qty_ordered, qty_supplied, qty_per_case, wsale_value, base_price, total_quantity_supplied, total_wholesale_amount]
+  }
+
+  measure: distinct_quantity_per_case  {
+    type: min
+    sql: ${qty_per_case} ;;
+    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    drill_fields: [invoice_number, outlet_id, outlet_name, product_code,product_description, qty_ordered, qty_supplied, qty_per_case, wsale_value, base_price, total_quantity_supplied, total_wholesale_amount]
+  }
+
+
+  measure: quantity_by_case  {
+    sql: ${total_quantity_supplied}/${distinct_quantity_per_case} ;;
+    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    drill_fields: [invoice_number, outlet_id, outlet_name, product_code,product_description, qty_ordered, qty_supplied, qty_per_case, wsale_value, base_price, total_quantity_supplied, total_wholesale_amount, quantity_by_case]
+  }
+
 }

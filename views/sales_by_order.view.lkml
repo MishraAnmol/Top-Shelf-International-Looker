@@ -43,6 +43,12 @@ view: sales_by_order {
     sql: ${TABLE}."COUNTRY_CODE" ;;
   }
 
+  dimension: cost_mrp {
+    type: number
+    sql: ${TABLE}."COST_MRP" ;;
+    value_format: "$#.00;($#.00)"
+  }
+
   dimension: customer_code {
     type: string
     sql: ${TABLE}."CUSTOMER_CODE" ;;
@@ -259,6 +265,30 @@ view: sales_by_order {
     value_format: "$#.00;($#.00)"
   }
 
+  dimension: product_cogs_aud {
+    type: number
+    sql: ${TABLE}."PRODUCT_COGS_AUD" ;;
+    value_format: "$#.00;($#.00)"
+  }
+
+  dimension: excise_aud {
+    type: number
+    sql: ${TABLE}."EXCISE_AUD" ;;
+    value_format: "$#.00;($#.00)"
+  }
+
+  dimension: freight_aud {
+    type: number
+    sql: ${TABLE}."FREIGHT_AUD" ;;
+    value_format: "$#.00;($#.00)"
+  }
+
+  dimension: cds_aud {
+    type: number
+    sql: ${TABLE}."CDS_AUD" ;;
+    value_format: "$#.00;($#.00)"
+  }
+
   dimension: unit_type {
     type: string
     sql: ${TABLE}."UNIT_TYPE" ;;
@@ -290,31 +320,57 @@ view: sales_by_order {
     drill_fields: [first_name, last_name, brand_name]
   }
 
-  measure: total_sales_amount  {
+  measure: net_sales_amount  {
     type: sum
     sql: ${sales_amount_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, sales_amount_aud]
+    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, total_sales_quantity, total_product_cogs, total_excise, total_freight, total_cds]
   }
 
   measure: total_sales_quantity  {
     type: sum
     sql: ${sales_quantity} ;;
-    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, sales_quantity]
+    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, total_sales_quantity, total_product_cogs, total_excise, total_freight, total_cds]
   }
 
-  measure: total_cost_amount  {
+  measure: total_product_cogs  {
     type: sum
-    sql: ${total_cost_amount_aud} ;;
+    sql: ${product_cogs_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, total_cost_amount_aud]
+    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, total_sales_quantity, total_product_cogs, total_excise, total_freight, total_cds]
   }
 
-  measure: total_cost_amount_wo_excise  {
+  measure: total_excise  {
     type: sum
-    sql: ${operating_cost_amount_aud} ;;
+    sql: ${excise_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [customer_order_id, customer_title, customer_channel, product_title, brand_type, brand_name, operating_cost_amount_aud]
+    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, total_sales_quantity, total_product_cogs, total_excise, total_freight, total_cds]
+  }
+
+  measure: total_freight  {
+    type: sum
+    sql: ${freight_aud} ;;
+    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, total_sales_quantity, total_product_cogs, total_excise, total_freight, total_cds]
+  }
+
+  measure: total_cds  {
+    type: sum
+    sql: ${cds_aud} ;;
+    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, total_sales_quantity, total_product_cogs, total_excise, total_freight, total_cds]
+  }
+
+  measure: C1_Margin  {
+    sql: (${net_sales_amount} - ${total_product_cogs}-${total_excise})*100/${net_sales_amount} ;;
+    value_format: "0.00\%"
+    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, total_sales_quantity, total_product_cogs, total_excise, total_freight, total_cds, C1_Margin, C2_Margin]
+  }
+
+  measure: C2_Margin  {
+    sql: ${C1_Margin} -${total_freight}-${total_cds}*100/${net_sales_amount} ;;
+    value_format: "0.00\%"
+    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, total_sales_quantity, total_product_cogs, total_excise, total_freight, total_cds, C1_Margin, C2_Margin]
   }
 
 
