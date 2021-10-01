@@ -11,7 +11,6 @@ datagroup: sales_default_datagroup {
 
 persist_with: sales_default_datagroup
 
-explore: claim_by_product {}
 explore: top_brand{}
 explore: sales_by_order {
   join: top_brand {
