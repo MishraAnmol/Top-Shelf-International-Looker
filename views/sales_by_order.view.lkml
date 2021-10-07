@@ -122,6 +122,11 @@ view: sales_by_order {
     sql: ${TABLE}."FIRST_NAME" ;;
   }
 
+  dimension: fiscal_month_name_fy {
+    type: string
+    sql: ${TABLE}."FISCAL_MONTH_NAME_FY" ;;
+  }
+
   dimension: fiscal_quarter {
     type: string
     sql: ${TABLE}."FISCAL_QUARTER" ;;
@@ -129,6 +134,11 @@ view: sales_by_order {
 
   dimension: fiscal_year {
     type: number
+    sql: ${TABLE}."FISCAL_YEAR" ;;
+  }
+
+  dimension: fiscal_year_str {
+    type: string
     sql: ${TABLE}."FISCAL_YEAR" ;;
   }
 
@@ -140,6 +150,7 @@ view: sales_by_order {
   dimension: gross_sales_amount_aud {
     type: number
     sql: ${TABLE}."GROSS_SALES_AMOUNT_AUD" ;;
+    drill_fields: [source_stream,invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
   }
 
   dimension: invoice_code {
@@ -219,6 +230,7 @@ view: sales_by_order {
   dimension: net_sales_amount_aud {
     type: number
     sql: ${TABLE}."NET_SALES_AMOUNT_AUD" ;;
+    drill_fields: [source_stream,invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
   }
 
   dimension: phone {
@@ -269,6 +281,7 @@ view: sales_by_order {
   dimension: sales_quantity {
     type: number
     sql: ${TABLE}."SALES_QUANTITY" ;;
+    drill_fields: [source_stream,invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount_aud, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
   }
 
   dimension: size {
@@ -322,92 +335,96 @@ view: sales_by_order {
         END;;
   }
 
-  measure: count {
-    type: count
-    drill_fields: [first_name, last_name, brand_name]
+  set: customer_details {
+    fields: [customer_channel, customer_title, net_sales_amount, net_sales_amount_aud, gross_sales_amount, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
   }
 
-
+  measure: count {
+    type: count
+    drill_fields: [customer_details*]
+  }
 
   measure: order_count {
     type: count_distinct
     sql: ${customer_order_id} ;;
-    drill_fields: [first_name, last_name, brand_name]
+    drill_fields: [customer_details*]
   }
 
   measure: total_sales_quantity  {
     type: sum
     sql: ${sales_quantity} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [customer_details*]
   }
 
   measure: net_sales_amount  {
     type: sum
     sql: ${net_sales_amount_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [customer_details*]
   }
 
   measure: gross_sales_amount  {
     type: sum
     sql: ${gross_sales_amount_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [customer_details*]
   }
 
   measure: product_cogs_amount  {
     type: sum
     sql: ${product_cogs_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [source_stream,invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [customer_details*]
   }
 
   measure: excise_amount  {
     type: sum
     sql: ${excise_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [source_stream, customer_code, invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [customer_details*]
   }
 
   measure: freight_amount  {
     type: sum
     sql: ${freight_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [source_stream, customer_code, invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [customer_details*]
   }
 
   measure: cds_amount  {
     type: sum
     sql: ${cds_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [source_stream, customer_code, invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [customer_details*]
   }
 
   measure: c1_margin  {
     type: sum
     sql: ${c1_margin_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [source_stream, customer_code, invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [customer_details*]
   }
 
   measure: c2_margin  {
     type: sum
     sql: ${c2_margin_aud} ;;
     value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
-    drill_fields: [source_stream, customer_code, invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [customer_details*]
   }
 
   measure: c1_margin_perc  {
     sql: ${c1_margin}*100/${net_sales_amount} ;;
     value_format: "0.00\%"
-    drill_fields: [source_stream, customer_code, invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [customer_details*]
   }
 
   measure: c2_margin_perc  {
     sql: ${c2_margin}*100/${net_sales_amount} ;;
     value_format: "0.00\%"
-    drill_fields: [source_stream, customer_code, invoice_code, customer_channel, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [customer_details*]
   }
+
+
 
 }

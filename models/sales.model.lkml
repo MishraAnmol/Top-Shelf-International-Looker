@@ -11,12 +11,15 @@ datagroup: sales_default_datagroup {
 
 persist_with: sales_default_datagroup
 
-explore: top_brand{}
 explore: sales_by_order {
   join: top_brand {
     type: inner
     foreign_key: customer_title
     relationship: one_to_one
   }
+  join: contribution_margins {
+    type: left_outer
+    foreign_key: fiscal_month_name_fy
+    relationship: one_to_one
+  }
 }
-explore: sales_by_customer {}
