@@ -17,7 +17,7 @@ named_value_format: aud_currency_format {
 }
 
 named_value_format: quantity_format {
-  value_format: "0.0"
+  value_format: "#,##0"
   strict_value_format: yes
 }
 
