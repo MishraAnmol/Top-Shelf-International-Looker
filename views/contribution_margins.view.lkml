@@ -57,9 +57,9 @@ view: contribution_margins {
     drill_fields: [fiscal_month_name_fy]
   }
 
-  measure: net_sales_amount  {
+  measure: abs_net_sales_amount  {
     type: number
-    sql: ${sales_by_order.net_sales_amount};;
+    sql: ${sales_by_order.abs_net_sales_amount};;
   }
 
   measure: c2_margin  {
@@ -96,13 +96,13 @@ view: contribution_margins {
   }
 
   measure: c3_margin_perc  {
-    sql: ${c3_margin}*100/${net_sales_amount} ;;
+    sql: ${c3_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [detail*]
   }
 
   measure: c4_margin_perc  {
-    sql: ${c4_margin}*100/${net_sales_amount} ;;
+    sql: ${c4_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [detail*]
   }

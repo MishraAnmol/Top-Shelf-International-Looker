@@ -233,6 +233,12 @@ view: sales_by_order {
     drill_fields: [source_stream,invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
   }
 
+  dimension: abs_net_sales_amount_aud {
+    type: number
+    sql: ${TABLE}."ABS_NET_SALES_AMOUNT_AUD" ;;
+    drill_fields: [source_stream,invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+  }
+
   dimension: phone {
     type: string
     sql: ${TABLE}."PHONE" ;;
@@ -364,6 +370,13 @@ view: sales_by_order {
     drill_fields: [customer_details*]
   }
 
+  measure: abs_net_sales_amount  {
+    type: sum
+    sql: ${abs_net_sales_amount_aud} ;;
+    value_format_name: aud_currency_format
+    drill_fields: [customer_details*]
+  }
+
 
   measure: net_sales_aud  {
    type:  number
@@ -444,13 +457,13 @@ view: sales_by_order {
   }
 
   measure: c1_margin_perc  {
-    sql: ${c1_margin}*100/${net_sales_amount} ;;
+    sql: ${c1_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [customer_details*]
-  }
+    }
 
   measure: c2_margin_perc  {
-    sql: ${c2_margin}*100/${net_sales_amount} ;;
+    sql: ${c2_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [customer_details*]
   }
