@@ -11,6 +11,17 @@ datagroup: sales_default_datagroup {
 
 persist_with: sales_default_datagroup
 
+named_value_format: aud_currency_format {
+  value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+  strict_value_format: yes
+}
+
+named_value_format: quantity_format {
+  value_format: "0.0"
+  strict_value_format: yes
+}
+
+
 explore: sales_by_order {
   join: top_brand {
     type: inner
@@ -23,3 +34,5 @@ explore: sales_by_order {
     relationship: one_to_one
   }
 }
+
+explore: alm_sales_by_order {}

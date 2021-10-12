@@ -1,7 +1,7 @@
 view: contribution_margins {
   derived_table: {
-    sql: select fiscal_month_name_fy, stock_overheads, promo_overheads from
-            (   SELECT fiscal_month_name_fy,
+    sql: select fiscal_year, fiscal_month_name_fy, stock_overheads, promo_overheads from
+            (   SELECT fiscal_year, fiscal_month_name_fy,
                 COALESCE(SUM(CASE
                       WHEN ( "MODIFIED_ACCOUNT_NAME"  ) in ('Promotional and Artwork Expenses', 'Sales and Marketing - Activation', 'Sales and Marketing - Agencies', 'Sales and Marketing - Brand', 'Sales and Marketing - Design', 'Sales and Marketing')
                       THEN ( "NET_AMOUNT"  )
@@ -15,13 +15,18 @@ view: contribution_margins {
                     END), 0) AS stock_overheads
             FROM
             SALES.PROMO_EXPENSES
-            group by fiscal_month_name_fy)
+            group by fiscal_year, fiscal_month_name_fy)
        ;;
   }
 
   measure: count {
     type: count
     drill_fields: [detail*]
+  }
+
+  dimension: fiscal_year {
+    type: number
+    sql: ${TABLE}."FISCAL_YEAR" ;;
   }
 
   dimension: fiscal_month_name_fy {
@@ -65,14 +70,28 @@ view: contribution_margins {
     measure: c3_margin  {
     type:  number
     sql: ${c2_margin} - ${stock_overheads_val};;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    value_format_name: aud_currency_format
+    drill_fields: [detail*]
+  }
+
+  measure: c3_margins_aud  {
+    type:  number
+    sql: to_number(${c3_margin},10,2)  ;;
+    value_format: "$0.00"
     drill_fields: [detail*]
   }
 
   measure: c4_margin  {
     type:  number
     sql: ${c2_margin} - ${stock_overheads_val} - ${promo_overheads_val};;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    value_format_name: aud_currency_format
+    drill_fields: [detail*]
+  }
+
+  measure: c4_margins_aud  {
+    type:  number
+    sql: to_number(${c4_margin},10,2)  ;;
+    value_format: "$0.00"
     drill_fields: [detail*]
   }
 
@@ -87,8 +106,6 @@ view: contribution_margins {
     value_format: "0.00\%"
     drill_fields: [detail*]
   }
-
-
 
   set: detail {
     fields: [

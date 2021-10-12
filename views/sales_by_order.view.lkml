@@ -353,63 +353,93 @@ view: sales_by_order {
   measure: total_sales_quantity  {
     type: sum
     sql: ${sales_quantity} ;;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    value_format_name: quantity_format
     drill_fields: [customer_details*]
   }
 
   measure: net_sales_amount  {
     type: sum
     sql: ${net_sales_amount_aud} ;;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    value_format_name: aud_currency_format
     drill_fields: [customer_details*]
   }
+
+
+  measure: net_sales_aud  {
+   type:  number
+    sql: to_number(${net_sales_amount},10,2)  ;;
+    value_format: "$#,##0.00"
+    drill_fields: [customer_details*]
+  }
+
 
   measure: gross_sales_amount  {
     type: sum
     sql: ${gross_sales_amount_aud} ;;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    value_format_name: aud_currency_format
+    drill_fields: [customer_details*]
+  }
+
+  measure: gross_sales_aud  {
+    type: number
+    sql: to_number(${gross_sales_amount},10,2) ;;
+    value_format: "$0.00"
     drill_fields: [customer_details*]
   }
 
   measure: product_cogs_amount  {
     type: sum
     sql: ${product_cogs_aud} ;;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    value_format_name: aud_currency_format
     drill_fields: [customer_details*]
   }
 
   measure: excise_amount  {
     type: sum
     sql: ${excise_aud} ;;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    value_format_name: aud_currency_format
     drill_fields: [customer_details*]
   }
 
   measure: freight_amount  {
     type: sum
     sql: ${freight_aud} ;;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    value_format_name: aud_currency_format
     drill_fields: [customer_details*]
   }
 
   measure: cds_amount  {
     type: sum
     sql: ${cds_aud} ;;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    value_format_name: aud_currency_format
     drill_fields: [customer_details*]
   }
 
   measure: c1_margin  {
     type: sum
     sql: ${c1_margin_aud} ;;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    value_format_name: aud_currency_format
+    drill_fields: [customer_details*]
+  }
+
+  measure: c1_margins_aud  {
+    type:  number
+    sql: to_number(${c1_margin},10,2)  ;;
+    value_format: "$0.00"
     drill_fields: [customer_details*]
   }
 
   measure: c2_margin  {
     type: sum
     sql: ${c2_margin_aud} ;;
-    value_format: "[>=1000000]$0.00,,\"M\";[>=1000]$0.00,\"K\";$0.00"
+    value_format_name: aud_currency_format
+    drill_fields: [customer_details*]
+  }
+
+  measure: c2_margins_aud  {
+    type:  number
+    sql: to_number(${c2_margin},10,2)  ;;
+    value_format: "$0.00"
     drill_fields: [customer_details*]
   }
 
@@ -424,7 +454,6 @@ view: sales_by_order {
     value_format: "0.00\%"
     drill_fields: [customer_details*]
   }
-
 
 
 }
