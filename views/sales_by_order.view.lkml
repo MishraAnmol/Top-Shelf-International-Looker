@@ -83,6 +83,17 @@ view: sales_by_order {
     sql: ${TABLE}."CUSTOMER_TITLE" ;;
   }
 
+  dimension: customer {
+    type: string
+    sql: CASE WHEN ${customer_channel} = 'Direct Consumer'
+              THEN CASE WHEN ${brand_name} = 'Grainshaker' THEN 'Grainshaker Customer'
+                        WHEN ${brand_name} = 'NED' THEN 'NED Customer'
+                        ELSE '-NA-'
+                   END
+              ELSE ${customer_title}
+         END ;;
+  }
+
   dimension: customer_channel {
     type: string
     sql: ${TABLE}."CUSTOMER_TYPE" ;;
