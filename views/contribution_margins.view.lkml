@@ -72,6 +72,7 @@ view: contribution_margins {
     sql: ${c2_margin} - ${stock_overheads_val};;
     value_format_name: aud_currency_format
     drill_fields: [detail*]
+    description: "Contribution Margin 3 - Net sales less Product, Excise, Freight, CDS & Sample stock costs"
   }
 
   measure: c3_margins_aud  {
@@ -79,6 +80,7 @@ view: contribution_margins {
     sql: to_number(${c3_margin},10,2)  ;;
     value_format: "$0.00"
     drill_fields: [detail*]
+    description: "Contribution Margin 3 - Net sales less Product, Excise, Freight, CDS & Sample stock costs"
   }
 
   measure: c4_margin  {
@@ -86,6 +88,7 @@ view: contribution_margins {
     sql: ${c2_margin} - ${stock_overheads_val} - ${promo_overheads_val};;
     value_format_name: aud_currency_format
     drill_fields: [detail*]
+    description: "Contribution Margin 3 - Net sales less Product, Excise, Freight, CDS, Sample stock, Ad & Promo costs"
   }
 
   measure: c4_margins_aud  {
@@ -93,18 +96,21 @@ view: contribution_margins {
     sql: to_number(${c4_margin},10,2)  ;;
     value_format: "$0.00"
     drill_fields: [detail*]
+    description: "Contribution Margin 3 - Net sales less Product, Excise, Freight, CDS, Sample stock, Ad & Promo costs"
   }
 
   measure: c3_margin_perc  {
     sql: ${c3_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [detail*]
+    description: "Contribution Margin 3 - Net sales less Product, Excise, Freight, CDS & Sample stock costs"
   }
 
   measure: c4_margin_perc  {
     sql: ${c4_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [detail*]
+    description: "Contribution Margin 3 - Net sales less Product, Excise, Freight, CDS, Sample stock, Ad & Promo costs"
   }
 
   set: detail {
