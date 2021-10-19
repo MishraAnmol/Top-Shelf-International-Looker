@@ -21,6 +21,11 @@ named_value_format: quantity_format {
   strict_value_format: yes
 }
 
+named_value_format: integer_format {
+  value_format: "0"
+  strict_value_format: yes
+}
+
 
 explore: sales_by_order {
   join: top_brand {
@@ -35,4 +40,10 @@ explore: sales_by_order {
   }
 }
 
-explore: alm_sales_by_order {}
+explore: alm_sales_by_order {
+  join: alm_customers_by_case {
+    type: inner
+    foreign_key: outlet_name
+    relationship: one_to_one
+  }
+}

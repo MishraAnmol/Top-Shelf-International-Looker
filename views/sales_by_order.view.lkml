@@ -146,6 +146,7 @@ view: sales_by_order {
   dimension: fiscal_year {
     type: number
     sql: ${TABLE}."FISCAL_YEAR" ;;
+    value_format_name: integer_format
   }
 
   dimension: fiscal_year_str {
