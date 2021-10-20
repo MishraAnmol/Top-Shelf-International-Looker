@@ -2,7 +2,7 @@ view: alm_customers_by_case {
   derived_table: {
     sql: with current_month as (
       select outlet_name,
-      coalesce(sum(QTY_SUPPLIED/QTY_PER_CASE),0) cases_sold_curr_month,
+      coalesce(sum(QTY_BY_CASE),0) cases_sold_curr_month,
       coalesce(sum(WSALE_VALUE),0) WHOLESALE_AUD_curr_month
       from SALES.ALM_SALES_BY_ORDER
         where ((TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD'))) >=((TO_DATE(DATE_TRUNC('month', CURRENT_DATE())))) AND ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) ) < ((TO_DATE(DATEADD('month', 1, DATE_TRUNC('month', CURRENT_DATE())))))
@@ -10,7 +10,7 @@ view: alm_customers_by_case {
         ),
        last_3_months as (
       select outlet_name,
-      coalesce(sum(QTY_SUPPLIED/QTY_PER_CASE),0) cases_sold_last_3_months,
+      coalesce(sum(QTY_BY_CASE),0) cases_sold_last_3_months,
       coalesce(sum(WSALE_VALUE),0) WHOLESALE_AUD_last_3_months
       from SALES.ALM_SALES_BY_ORDER
         where ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) )>=((TO_DATE(DATEADD('month', -3, DATE_TRUNC('month', CURRENT_DATE()))))) AND ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) ) < ((TO_DATE(DATEADD('month', 3, DATEADD('month', -3, DATE_TRUNC('month', CURRENT_DATE()))))))
@@ -18,7 +18,7 @@ view: alm_customers_by_case {
         ),
        last_6_months as (
       select outlet_name,
-      coalesce(sum(QTY_SUPPLIED/QTY_PER_CASE),0) cases_sold_last_6_months,
+      coalesce(sum(QTY_BY_CASE),0) cases_sold_last_6_months,
       coalesce(sum(WSALE_VALUE),0) WHOLESALE_AUD_last_6_months
       from SALES.ALM_SALES_BY_ORDER
         where ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) )>=((TO_DATE(DATEADD('month', -6, DATE_TRUNC('month', CURRENT_DATE()))))) AND ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) ) < ((TO_DATE(DATEADD('month', 6, DATEADD('month', -6, DATE_TRUNC('month', CURRENT_DATE()))))))
@@ -26,7 +26,7 @@ view: alm_customers_by_case {
         ),
          last_3to6_months as (
       select outlet_name,
-      coalesce(sum(QTY_SUPPLIED/QTY_PER_CASE),0) cases_sold_last_3to6_months,
+      coalesce(sum(QTY_BY_CASE),0) cases_sold_last_3to6_months,
       coalesce(sum(WSALE_VALUE),0) WHOLESALE_AUD_last_3to6_months
       from SALES.ALM_SALES_BY_ORDER
         where ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) )>=((TO_DATE(DATEADD('month', -6, DATE_TRUNC('month', CURRENT_DATE()))))) AND ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) ) < ((TO_DATE(DATEADD('month', 3, DATEADD('month', -5, DATE_TRUNC('month', CURRENT_DATE()))))))
@@ -34,7 +34,7 @@ view: alm_customers_by_case {
         ),
         older_than_6_months as (
       select  outlet_name,
-      coalesce(sum(QTY_SUPPLIED/QTY_PER_CASE),0) cases_sold_older_than_6_months,
+      coalesce(sum(QTY_BY_CASE),0) cases_sold_older_than_6_months,
       coalesce(sum(WSALE_VALUE),0) WHOLESALE_AUD_older_than_6_months
       from SALES.ALM_SALES_BY_ORDER
         where ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) )<((TO_DATE(DATEADD('month', -6, DATE_TRUNC('month', CURRENT_DATE())))))

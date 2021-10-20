@@ -42,6 +42,11 @@ view: alm_sales_by_order {
     sql: ${TABLE}."FISCAL_YEAR_MONTH" ;;
   }
 
+  dimension: week_of_fiscal_year {
+    type: string
+    sql: ${TABLE}."WEEK_OF_FISCAL_YEAR" ;;
+  }
+
   dimension: group_name {
     type: string
     sql: ${TABLE}."GROUP_NAME" ;;
@@ -171,6 +176,11 @@ view: alm_sales_by_order {
     sql: ${TABLE}."QTY_SUPPLIED" ;;
   }
 
+  dimension: qty_by_case {
+    type: number
+    sql: ${TABLE}."QTY_BY_CASE" ;;
+  }
+
   dimension: source_stream {
     type: string
     sql: ${TABLE}."SOURCE_STREAM" ;;
@@ -242,50 +252,15 @@ view: alm_sales_by_order {
     drill_fields: [alm_customer_details*]
   }
 
-  measure: total_qty_per_case  {
+  measure: total_qty_by_case  {
     type: sum
-    sql: ${qty_per_case} ;;
+    sql: ${qty_by_case} ;;
     value_format_name: quantity_format
     drill_fields: [alm_customer_details*]
   }
 
-  measure: total_cases_calc  {
-    sql: ${total_qty_supplied}/${total_qty_per_case};;
-    value_format_name: quantity_format
-    drill_fields: [alm_customer_details*]
-  }
 
-  measure: total_cases_curr_month {
-    type:  number
-    sql:CASE WHEN ${trans_date}>=((TO_DATE(DATE_TRUNC('month', CURRENT_DATE())))) AND ${trans_date} < ((TO_DATE(DATEADD('month', 1, DATE_TRUNC('month', CURRENT_DATE())))))
-            THEN ${total_cases_calc}
-            ELSE 0
-            END;;
-    value_format_name: quantity_format
-    drill_fields: [alm_customer_details*]
-  }
-
-  measure: total_cases_3_months {
-    type:  number
-    sql:CASE WHEN ${trans_date}>=((TO_DATE(DATEADD('month', -2, DATE_TRUNC('month', CURRENT_DATE()))))) AND ${trans_date} < ((TO_DATE(DATEADD('month', 3, DATEADD('month', -2, DATE_TRUNC('month', CURRENT_DATE()))))))
-            THEN ${total_cases_calc}
-            ELSE 0
-            END;;
-    value_format_name: quantity_format
-    drill_fields: [alm_customer_details*]
-  }
-
-  measure: total_cases_6_months {
-    type:  number
-    sql:CASE WHEN ${trans_date}>=((TO_DATE(DATEADD('month', -5, DATE_TRUNC('month', CURRENT_DATE()))))) AND ${trans_date} < ((TO_DATE(DATEADD('month', 6, DATEADD('month', -5, DATE_TRUNC('month', CURRENT_DATE()))))))
-            THEN ${total_cases_calc}
-            ELSE 0
-            END;;
-    value_format_name: quantity_format
-    drill_fields: [alm_customer_details*]
-  }
-
-  measure: total_wsale_value {
+ measure: total_wsale_value {
     type: sum
     sql: ${wsale_value} ;;
     value_format_name: aud_currency_format
@@ -299,7 +274,12 @@ view: alm_sales_by_order {
     drill_fields: [alm_customer_details*]
   }
 
-
+  measure: price_per_case {
+    type: sum
+    sql: case when ${qty_by_case} <> 0 then ${wsale_value}/${qty_by_case} else 0 end ;;
+    value_format_name: aud_currency_format
+    drill_fields: [alm_customer_details*]
+  }
 
 
 }
