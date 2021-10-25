@@ -28,6 +28,10 @@ named_value_format: integer_format {
 
 
 explore: sales_by_order {
+  conditionally_filter: {
+    filters: [item_code: "Rebate"]
+    unless: [brand_name]
+  }
   join: top_brand {
     type: inner
     foreign_key: customer_title

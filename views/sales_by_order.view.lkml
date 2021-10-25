@@ -138,9 +138,9 @@ view: sales_by_order {
     sql: ${TABLE}."FISCAL_MONTH_NAME_FY" ;;
   }
 
-  dimension: fiscal_quarter {
+  dimension: fiscal_quarter_name_fy {
     type: string
-    sql: ${TABLE}."FISCAL_QUARTER" ;;
+    sql: ${TABLE}."FISCAL_QUARTER_NAME_FY" ;;
   }
 
   dimension: fiscal_year {
@@ -180,10 +180,11 @@ view: sales_by_order {
       quarter,
       year
     ]
-    convert_tz: no
+    convert_tz: yes
     datatype: date
     sql: ${TABLE}."INVOICE_DATE" ;;
   }
+
 
   dimension: invoice_number {
     type: number
@@ -242,13 +243,13 @@ view: sales_by_order {
   dimension: net_sales_amount_aud {
     type: number
     sql: ${TABLE}."NET_SALES_AMOUNT_AUD" ;;
-    drill_fields: [source_stream,invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [source_stream,customer_order_id, invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount]
   }
 
   dimension: abs_net_sales_amount_aud {
     type: number
     sql: ${TABLE}."ABS_NET_SALES_AMOUNT_AUD" ;;
-    drill_fields: [source_stream,invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [source_stream,customer_order_id, invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount, abs_net_sales_amount_aud]
   }
 
   dimension: phone {
@@ -299,7 +300,7 @@ view: sales_by_order {
   dimension: sales_quantity {
     type: number
     sql: ${TABLE}."SALES_QUANTITY" ;;
-    drill_fields: [source_stream,invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount_aud, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    drill_fields: [source_stream,customer_order_id, invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, sales_quantity, net_sales_amount, abs_net_sales_amount_aud]
   }
 
   dimension: size {
@@ -354,7 +355,11 @@ view: sales_by_order {
   }
 
   set: customer_details {
-    fields: [customer_channel, customer_title, net_sales_amount, net_sales_amount_aud, gross_sales_amount, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    fields: [customer_order_id, invoice_code, customer_channel, customer_title,  gross_sales_amount, net_sales_amount_aud, c1_margin, c2_margin]
+  }
+
+  set: customer_details_all {
+    fields: [customer_order_id, invoice_code, customer_channel, customer_title,  gross_sales_amount, net_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
   }
 
   measure: count {
@@ -448,7 +453,7 @@ view: sales_by_order {
     type: sum
     sql: ${c1_margin_aud} ;;
     value_format_name: aud_currency_format
-    drill_fields: [customer_details*]
+    drill_fields: [customer_details_all*]
     description: "Contribution Margin 1 - Net sales less Product & Excise costs"
   }
 
@@ -456,7 +461,7 @@ view: sales_by_order {
     type:  number
     sql: to_number(${c1_margin},10,2)  ;;
     value_format: "$0.00"
-    drill_fields: [customer_details*]
+    drill_fields: [customer_details_all*]
     description: "Contribution Margin 1 - Net sales less Product & Excise costs"
   }
 
@@ -464,7 +469,7 @@ view: sales_by_order {
     type: sum
     sql: ${c2_margin_aud} ;;
     value_format_name: aud_currency_format
-    drill_fields: [customer_details*]
+    drill_fields: [customer_details_all*]
     description: "Contribution Margin 2 - Net sales less Product, Excise, Freight & CDS costs"
   }
 
@@ -472,21 +477,21 @@ view: sales_by_order {
     type:  number
     sql: to_number(${c2_margin},10,2)  ;;
     value_format: "$0.00"
-    drill_fields: [customer_details*]
+    drill_fields: [customer_details_all*]
     description: "Contribution Margin 2 - Net sales less Product, Excise, Freight & CDS costs"
   }
 
   measure: c1_margin_perc  {
     sql: ${c1_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
-    drill_fields: [customer_details*]
+    drill_fields: [customer_details_all*]
     description: "Contribution Margin 1 - Net sales less Product & Excise costs"
     }
 
   measure: c2_margin_perc  {
     sql: ${c2_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
-    drill_fields: [customer_details*]
+    drill_fields: [customer_details_all*]
     description: "Contribution Margin 2 - Net sales less Product, Excise, Freight & CDS costs"
   }
 
