@@ -35,7 +35,7 @@ named_value_format: integer_format {
 explore: sales_by_order {
   conditionally_filter: {
     filters: [item_code: "Rebate"]
-    unless: [brand_name, invoice_date]
+    unless: [brand_name, invoice_date, customer_channel]
   }
   join: top_brand {
     type: inner
