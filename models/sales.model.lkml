@@ -44,6 +44,9 @@ explore: sales_by_order {
   }
 }
 
+
+explore: alm_stock_on_hand {}
+
 explore: alm_sales_by_order {
   join: alm_customers_by_case {
     type: inner
