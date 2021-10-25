@@ -452,9 +452,9 @@ view: sales_by_order {
   measure: c1_margin  {
     type: sum
     sql: ${c1_margin_aud} ;;
-    value_format_name: aud_currency_format
+    value_format_name: margin_values_format
     drill_fields: [customer_details_all*]
-    description: "Contribution Margin 1 - Net sales less Product & Excise costs"
+    description: "Contribution Margin 1 : Net sales less Product & Excise costs"
   }
 
   measure: c1_margins_aud  {
@@ -462,15 +462,15 @@ view: sales_by_order {
     sql: to_number(${c1_margin},10,2)  ;;
     value_format: "$0.00"
     drill_fields: [customer_details_all*]
-    description: "Contribution Margin 1 - Net sales less Product & Excise costs"
+    description: "Contribution Margin 1 : Net sales less Product & Excise costs"
   }
 
   measure: c2_margin  {
     type: sum
     sql: ${c2_margin_aud} ;;
-    value_format_name: aud_currency_format
+    value_format_name: margin_values_format
     drill_fields: [customer_details_all*]
-    description: "Contribution Margin 2 - Net sales less Product, Excise, Freight & CDS costs"
+    description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
   }
 
   measure: c2_margins_aud  {
@@ -478,21 +478,21 @@ view: sales_by_order {
     sql: to_number(${c2_margin},10,2)  ;;
     value_format: "$0.00"
     drill_fields: [customer_details_all*]
-    description: "Contribution Margin 2 - Net sales less Product, Excise, Freight & CDS costs"
+    description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
   }
 
   measure: c1_margin_perc  {
     sql: ${c1_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [customer_details_all*]
-    description: "Contribution Margin 1 - Net sales less Product & Excise costs"
+    description: "Contribution Margin 1 : Net sales less Product & Excise costs"
     }
 
   measure: c2_margin_perc  {
     sql: ${c2_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [customer_details_all*]
-    description: "Contribution Margin 2 - Net sales less Product, Excise, Freight & CDS costs"
+    description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
   }
 
 
