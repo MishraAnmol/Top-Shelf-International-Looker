@@ -33,10 +33,7 @@ named_value_format: integer_format {
 
 
 explore: sales_by_order {
-  conditionally_filter: {
-    filters: [item_code: "Rebate"]
-    unless: [brand_name, invoice_date, customer_channel]
-  }
+  sql_always_where:${sales_by_order.brand_name} = 'NED' OR ${sales_by_order.brand_name} = 'Grainshaker' OR ${sales_by_order.brand_name} = '3rd Party' OR ${sales_by_order.item_code} = 'Rebate' ;;
   join: top_brand {
     type: inner
     foreign_key: customer_title
