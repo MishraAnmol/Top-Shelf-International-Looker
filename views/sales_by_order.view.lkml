@@ -396,7 +396,7 @@ view: sales_by_order {
   }
 
 
-measure : net_sales_aud_state {
+measure: net_sales_aud_state {
   type:  number
   sql:  sum(${net_sales_amount}) over (partition by ${state});;
 
