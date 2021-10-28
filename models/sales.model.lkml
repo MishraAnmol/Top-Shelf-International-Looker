@@ -16,6 +16,11 @@ named_value_format: aud_currency_format {
   strict_value_format: yes
 }
 
+named_value_format: margin_values_format {
+  value_format: "[>=1000000]0.00,,\"M\";[>=1000]0.00,\"K\";0.00"
+  strict_value_format: yes
+}
+
 named_value_format: quantity_format {
   value_format: "#,##0"
   strict_value_format: yes
@@ -28,6 +33,7 @@ named_value_format: integer_format {
 
 
 explore: sales_by_order {
+  sql_always_where:${sales_by_order.brand_name} = 'NED' OR ${sales_by_order.brand_name} = 'Grainshaker' OR ${sales_by_order.brand_name} = '3rd Party' OR ${sales_by_order.item_code} = 'Rebate' ;;
   join: top_brand {
     type: inner
     foreign_key: customer_title
