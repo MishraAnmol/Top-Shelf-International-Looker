@@ -399,6 +399,12 @@ view: sales_by_order {
     description: "Net sales values - Gross sales less discounts & rebates"
   }
 
+measure : net_sales_aud_state {
+  type:  number
+  sql:  sum(${net_sales_aud}) over (partition by ${state});;
+
+
+}
 
   measure: gross_sales_amount  {
     type: sum
