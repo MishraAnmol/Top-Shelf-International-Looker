@@ -185,6 +185,10 @@ view: sales_by_order {
     sql: ${TABLE}."INVOICE_DATE" ;;
   }
 
+  dimension: is_before_mtd {
+    type: yesno
+    sql: EXTRACT(DAY FROM ${invoice_raw}) <= EXTRACT(DAY FROM current_date);;
+}
 
   dimension: invoice_number {
     type: number
@@ -406,9 +410,18 @@ measure: net_sales_aud_state {
   measure: gross_sales_amount  {
     type: sum
     sql: ${gross_sales_amount_aud} ;;
-    value_format_name: aud_currency_format
+    html: @{aud_currency_format}  ;;
     drill_fields: [customer_details*]
     description: "Gross sales based on wholesale prices"
+  }
+
+
+  measure: gross_sales_difference  {
+    type: sum
+    sql: ${gross_sales_amount_aud} - ${net_sales_amount_aud};;
+    html: @{aud_currency_format}  ;;
+    drill_fields: [customer_details*]
+    description: "Gross sales less Net Sales"
   }
 
   measure: product_cogs_amount  {
