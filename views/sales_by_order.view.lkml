@@ -138,6 +138,60 @@ view: sales_by_order {
     sql: ${TABLE}."FISCAL_MONTH_NAME_FY" ;;
   }
 
+  dimension: fiscal_month_customer_sort {
+    label: "Fiscal Month (Custom Sort)"
+    case: {
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Jul' ;;
+        label: "July"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Aug' ;;
+        label: "August"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Sep' ;;
+        label: "September"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Oct' ;;
+        label: "October"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Nov' ;;
+        label: "November"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Dec' ;;
+        label: "December"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Jan' ;;
+        label: "January"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Feb' ;;
+        label: "February"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Mar' ;;
+        label: "March"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Apr' ;;
+        label: "April"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%May' ;;
+        label: "May"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Jun' ;;
+        label: "June"
+      }
+    }
+  }
+
   dimension: fiscal_quarter_name_fy {
     type: string
     sql: ${TABLE}."FISCAL_QUARTER_NAME_FY" ;;
@@ -151,7 +205,7 @@ view: sales_by_order {
 
   dimension: fiscal_year_str {
     type: string
-    sql: ${TABLE}."FISCAL_YEAR" ;;
+    sql: 'FY'||substr( ${TABLE}."FISCAL_YEAR" ,3,2);;
   }
 
   dimension: freight_aud {
