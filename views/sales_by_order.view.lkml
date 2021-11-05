@@ -205,7 +205,7 @@ view: sales_by_order {
 
   dimension: fiscal_year_str {
     type: string
-    sql: 'FY'||substr( ${TABLE}."FISCAL_YEAR" ,3,2);;
+    sql: ${TABLE}."FISCAL_YEAR";;
   }
 
   dimension: freight_aud {
