@@ -115,7 +115,7 @@ view: contribution_margins {
     sql: ${c2_margin} - ${stock_overheads_val} - ${promo_overheads_val};;
     html: @{margin_values_format}  ;;
     drill_fields: [detail*]
-    description: "Contribution Margin 3 : Net sales less Product, Excise, Freight, CDS, Sample stock, Ad & Promo costs"
+    description: "Contribution Margin 4 : Net sales less Product, Excise, Freight, CDS, Sample stock, Ad & Promo costs"
   }
 
 
@@ -130,7 +130,7 @@ view: contribution_margins {
     sql: ${c4_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [detail*]
-    description: "Contribution Margin 3 : Net sales less Product, Excise, Freight, CDS, Sample stock, Ad & Promo costs"
+    description: "Contribution Margin 4 : Net sales less Product, Excise, Freight, CDS, Sample stock, Ad & Promo costs"
   }
 
   set: detail {
