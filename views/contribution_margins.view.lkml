@@ -110,10 +110,26 @@ view: contribution_margins {
     description: "Contribution Margin 3 : Net sales less Product, Excise, Freight, CDS & Sample stock costs"
   }
 
+  measure: c3_margin_format  {
+    type:  number
+    sql: ${c2_margin} - ${stock_overheads_val};;
+    value_format: "[>=0]#,##0.00;[<0]-#,##0.00"
+    drill_fields: [detail*]
+    description: "Contribution Margin 3 : Net sales less Product, Excise, Freight, CDS & Sample stock costs"
+  }
+
   measure: c4_margin  {
     type:  number
     sql: ${c2_margin} - ${stock_overheads_val} - ${promo_overheads_val};;
     html: @{margin_values_format}  ;;
+    drill_fields: [detail*]
+    description: "Contribution Margin 4 : Net sales less Product, Excise, Freight, CDS, Sample stock, Ad & Promo costs"
+  }
+
+  measure: c4_margin_format  {
+    type:  number
+    sql: ${c2_margin} - ${stock_overheads_val} - ${promo_overheads_val};;
+    value_format: "[>=0]#,##0.00;[<0]-#,##0.00"
     drill_fields: [detail*]
     description: "Contribution Margin 4 : Net sales less Product, Excise, Freight, CDS, Sample stock, Ad & Promo costs"
   }

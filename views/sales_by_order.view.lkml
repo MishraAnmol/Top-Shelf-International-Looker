@@ -446,6 +446,14 @@ view: sales_by_order {
     description: "Net sales values - Gross sales less discounts & rebates"
   }
 
+  measure: net_sales_amount_format  {
+    type: sum
+    sql: ${net_sales_amount_aud} ;;
+    value_format: "[>=0]$#,##0.00;[<0]$-#,##0.00"
+    drill_fields: [customer_details*]
+    description: "Net sales values - Gross sales less discounts & rebates"
+  }
+
   measure: abs_net_sales_amount  {
     type: sum
     sql: ${abs_net_sales_amount_aud} ;;
@@ -465,6 +473,14 @@ measure: net_sales_aud_state {
     type: sum
     sql: ${gross_sales_amount_aud} ;;
     html: @{aud_currency_format}  ;;
+    drill_fields: [customer_details*]
+    description: "Gross sales based on wholesale prices"
+  }
+
+  measure: gross_sales_amount_format  {
+    type: sum
+    sql: ${gross_sales_amount_aud} ;;
+    value_format: "[>=0]$#,##0.00;[<0]$-#,##0.00"
     drill_fields: [customer_details*]
     description: "Gross sales based on wholesale prices"
   }
@@ -514,10 +530,26 @@ measure: net_sales_aud_state {
     description: "Contribution Margin 1 : Net sales less Product & Excise costs"
   }
 
+  measure: c1_margin_format  {
+    type: sum
+    sql: ${c1_margin_aud} ;;
+    value_format: "[>=0]#,##0.00;[<0]-#,##0.00"
+    drill_fields: [customer_details_all*]
+    description: "Contribution Margin 1 : Net sales less Product & Excise costs"
+  }
+
   measure: c2_margin  {
     type: sum
     sql: ${c2_margin_aud} ;;
     html: @{margin_values_format}  ;;
+    drill_fields: [customer_details_all*]
+    description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
+  }
+
+  measure: c2_margin_format  {
+    type: sum
+    sql: ${c2_margin_aud} ;;
+    value_format: "[>=0]#,##0.00;[<0]-#,##0.00"
     drill_fields: [customer_details_all*]
     description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
   }
