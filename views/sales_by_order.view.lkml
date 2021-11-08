@@ -37,6 +37,11 @@ view: sales_by_order {
     sql: ${TABLE}."C2_MARGIN_AUD" ;;
   }
 
+  dimension: c3_margin_aud {
+    type: number
+    sql: ${TABLE}."C3_MARGIN_AUD" ;;
+  }
+
   dimension: cds_aud {
     type: number
     sql: ${TABLE}."CDS_AUD" ;;
@@ -216,7 +221,6 @@ view: sales_by_order {
   dimension: gross_sales_amount_aud {
     type: number
     sql: ${TABLE}."GROSS_SALES_AMOUNT_AUD" ;;
-    drill_fields: [source_stream,invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
   }
 
   dimension: invoice_code {
@@ -413,11 +417,11 @@ view: sales_by_order {
   }
 
   set: customer_details {
-    fields: [customer_order_id, invoice_code, customer_channel, customer_title,  gross_sales_amount, net_sales_amount_aud, c1_margin, c2_margin]
+    fields: [customer_order_id, invoice_code, customer_channel, customer_title,  gross_sales_amount_format, net_sales_amount_format, c1_margin_format, c2_margin_format, c3_margin_format]
   }
 
   set: customer_details_all {
-    fields: [customer_order_id, invoice_code, customer_channel, customer_title,  gross_sales_amount, net_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    fields: [customer_order_id, invoice_code, customer_channel, customer_title,  gross_sales_amount_format, net_sales_amount_format, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin_format, c2_margin_format, c3_margin_format, c1_margin_perc, c2_margin_perc, c3_margin_perc]
   }
 
   measure: count {
@@ -554,6 +558,21 @@ measure: net_sales_aud_state {
     description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
   }
 
+  measure: c3_margin  {
+    type: sum
+    sql: ${c3_margin_aud} ;;
+    html: @{margin_values_format}  ;;
+    drill_fields: [customer_details_all*]
+    description: "Contribution Margin 1 : Net sales less Product & Excise costs"
+  }
+
+  measure: c3_margin_format  {
+    type: sum
+    sql: ${c3_margin_aud} ;;
+    value_format: "[>=0]#,##0.00;[<0]-#,##0.00"
+    drill_fields: [customer_details_all*]
+    description: "Contribution Margin 1 : Net sales less Product & Excise costs"
+  }
 
   measure: c1_margin_perc  {
     sql: ${c1_margin}*100/${abs_net_sales_amount} ;;
@@ -564,6 +583,13 @@ measure: net_sales_aud_state {
 
   measure: c2_margin_perc  {
     sql: ${c2_margin}*100/${abs_net_sales_amount} ;;
+    value_format: "0.00\%"
+    drill_fields: [customer_details_all*]
+    description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
+  }
+
+  measure: c3_margin_perc  {
+    sql: ${c3_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [customer_details_all*]
     description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
