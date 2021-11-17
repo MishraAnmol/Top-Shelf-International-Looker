@@ -37,6 +37,11 @@ view: sales_by_order {
     sql: ${TABLE}."C2_MARGIN_AUD" ;;
   }
 
+  dimension: c3_margin_aud {
+    type: number
+    sql: ${TABLE}."C3_MARGIN_AUD" ;;
+  }
+
   dimension: cds_aud {
     type: number
     sql: ${TABLE}."CDS_AUD" ;;
@@ -138,6 +143,60 @@ view: sales_by_order {
     sql: ${TABLE}."FISCAL_MONTH_NAME_FY" ;;
   }
 
+  dimension: fiscal_month_customer_sort {
+    label: "Fiscal Month (Custom Sort)"
+    case: {
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Jul' ;;
+        label: "July"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Aug' ;;
+        label: "August"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Sep' ;;
+        label: "September"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Oct' ;;
+        label: "October"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Nov' ;;
+        label: "November"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Dec' ;;
+        label: "December"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Jan' ;;
+        label: "January"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Feb' ;;
+        label: "February"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Mar' ;;
+        label: "March"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Apr' ;;
+        label: "April"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%May' ;;
+        label: "May"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Jun' ;;
+        label: "June"
+      }
+    }
+  }
+
   dimension: fiscal_quarter_name_fy {
     type: string
     sql: ${TABLE}."FISCAL_QUARTER_NAME_FY" ;;
@@ -151,7 +210,7 @@ view: sales_by_order {
 
   dimension: fiscal_year_str {
     type: string
-    sql: ${TABLE}."FISCAL_YEAR" ;;
+    sql: ${TABLE}."FISCAL_YEAR";;
   }
 
   dimension: freight_aud {
@@ -162,7 +221,6 @@ view: sales_by_order {
   dimension: gross_sales_amount_aud {
     type: number
     sql: ${TABLE}."GROSS_SALES_AMOUNT_AUD" ;;
-    drill_fields: [source_stream,invoice_code, customer_channel, customer_title, product_title, brand_type, brand_name, net_sales_amount, gross_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
   }
 
   dimension: invoice_code {
@@ -185,6 +243,10 @@ view: sales_by_order {
     sql: ${TABLE}."INVOICE_DATE" ;;
   }
 
+  dimension: is_before_mtd {
+    type: yesno
+    sql: EXTRACT(DAY FROM ${invoice_raw}) <= EXTRACT(DAY FROM current_date);;
+}
 
   dimension: invoice_number {
     type: number
@@ -355,11 +417,11 @@ view: sales_by_order {
   }
 
   set: customer_details {
-    fields: [customer_order_id, invoice_code, customer_channel, customer_title,  gross_sales_amount, net_sales_amount_aud, c1_margin, c2_margin]
+    fields: [customer_order_id, invoice_code, customer_channel, customer_title,  gross_sales_amount_format, net_sales_amount_format, c1_margin, c2_margin, c3_margin]
   }
 
   set: customer_details_all {
-    fields: [customer_order_id, invoice_code, customer_channel, customer_title,  gross_sales_amount, net_sales_amount_aud, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin, c2_margin, c1_margin_perc, c2_margin_perc]
+    fields: [customer_order_id, invoice_code, customer_channel, customer_title,  gross_sales_amount_format, net_sales_amount_format, product_cogs_amount, excise_amount, freight_amount, cds_amount, c1_margin_format, c2_margin, c3_margin, c1_margin_perc, c2_margin_perc, c3_margin_perc]
   }
 
   measure: count {
@@ -389,6 +451,15 @@ view: sales_by_order {
   }
 
 
+  measure: net_sales_amount_format  {
+    type: sum
+    sql: ${net_sales_amount_aud} ;;
+    value_format: "[>=0]$#,##0.00;[<0]$-#,##0.00"
+    drill_fields: [customer_details*]
+    description: "Net sales values - Gross sales less discounts & rebates"
+  }
+
+
   measure: abs_net_sales_amount  {
     type: sum
     sql: ${abs_net_sales_amount_aud} ;;
@@ -397,7 +468,7 @@ view: sales_by_order {
   }
 
 
-measure : net_sales_aud_state {
+measure: net_sales_aud_state {
   type:  number
   sql:  sum(${net_sales_amount}) over (partition by ${state});;
 
@@ -407,9 +478,26 @@ measure : net_sales_aud_state {
   measure: gross_sales_amount  {
     type: sum
     sql: ${gross_sales_amount_aud} ;;
-    value_format_name: aud_currency_format
+    html: @{aud_currency_format}  ;;
     drill_fields: [customer_details*]
     description: "Gross sales based on wholesale prices"
+  }
+
+  measure: gross_sales_amount_format  {
+    type: sum
+    sql: ${gross_sales_amount_aud} ;;
+    value_format: "[>=0]$#,##0.00;[<0]$-#,##0.00"
+    drill_fields: [customer_details*]
+    description: "Gross sales based on wholesale prices"
+  }
+
+
+  measure: gross_sales_difference  {
+    type: sum
+    sql: ${gross_sales_amount_aud} - ${net_sales_amount_aud};;
+    html: @{aud_currency_format}  ;;
+    drill_fields: [customer_details*]
+    description: "Gross sales less Net Sales"
   }
 
   measure: product_cogs_amount  {
@@ -443,7 +531,15 @@ measure : net_sales_aud_state {
   measure: c1_margin  {
     type: sum
     sql: ${c1_margin_aud} ;;
-    html: @{margin_values_format}  ;;
+    value_format: "#,##0"
+    drill_fields: [customer_details_all*]
+    description: "Contribution Margin 1 : Net sales less Product & Excise costs"
+  }
+
+  measure: c1_margin_format  {
+    type: sum
+    sql: ${c1_margin_aud} ;;
+    value_format: "[>=0]#,##0.00;[<0]-#,##0.00"
     drill_fields: [customer_details_all*]
     description: "Contribution Margin 1 : Net sales less Product & Excise costs"
   }
@@ -451,9 +547,18 @@ measure : net_sales_aud_state {
   measure: c2_margin  {
     type: sum
     sql: ${c2_margin_aud} ;;
-    html: @{margin_values_format}  ;;
+    value_format: "#,##0"
     drill_fields: [customer_details_all*]
     description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
+  }
+
+
+  measure: c3_margin  {
+    type: sum
+    sql: ${c3_margin_aud} ;;
+    value_format: "#,##0"
+    drill_fields: [customer_details_all*]
+    description: "Contribution Margin 1 : Net sales less Product & Excise costs"
   }
 
 
@@ -471,6 +576,7 @@ measure : net_sales_aud_state {
     description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
   }
 
+
   measure: distinct_customer_count{
     type: count_distinct
     sql: ${customer_id} ;;
@@ -480,5 +586,14 @@ measure : net_sales_aud_state {
     type: count_distinct
     sql: ${customer_id} || ${fiscal_month_name_fy} ;;
   }
+
+  measure: c3_margin_perc  {
+    sql: ${c3_margin}*100/${abs_net_sales_amount} ;;
+    value_format: "0.00\%"
+    drill_fields: [customer_details_all*]
+    description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
+  }
+
+
 
 }

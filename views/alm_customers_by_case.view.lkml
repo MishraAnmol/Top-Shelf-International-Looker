@@ -29,7 +29,7 @@ view: alm_customers_by_case {
       coalesce(sum(QTY_BY_CASE),0) cases_sold_last_3to6_months,
       coalesce(sum(WSALE_VALUE),0) WHOLESALE_AUD_last_3to6_months
       from SALES.ALM_SALES_BY_ORDER
-        where ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) )>=((TO_DATE(DATEADD('month', -6, DATE_TRUNC('month', CURRENT_DATE()))))) AND ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) ) < ((TO_DATE(DATEADD('month', 3, DATEADD('month', -5, DATE_TRUNC('month', CURRENT_DATE()))))))
+        where ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) )>=((TO_DATE(DATEADD('month', -6, DATE_TRUNC('month', CURRENT_DATE()))))) AND ( (TO_CHAR(TO_DATE(alm_sales_by_order."TRANS_DATE" ), 'YYYY-MM-DD')) ) < ((TO_DATE(DATEADD('month', 3, DATEADD('month', -6, DATE_TRUNC('month', CURRENT_DATE()))))))
       group by outlet_name
         ),
         older_than_6_months as (

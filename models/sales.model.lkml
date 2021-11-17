@@ -4,6 +4,7 @@ connection: "tsi-analytics"
 include: "/views/**/*.view"
 
 
+
 datagroup: sales_default_datagroup {
   # sql_trigger: SELECT MAX(id) FROM etl_log;;
   max_cache_age: "1 hour"
@@ -33,7 +34,12 @@ named_value_format: integer_format {
 
 
 explore: sales_by_order {
-  sql_always_where:${sales_by_order.brand_name} = 'NED' OR ${sales_by_order.brand_name} = 'Grainshaker' OR ${sales_by_order.brand_name} = '3rd Party' OR ${sales_by_order.item_code} = 'Rebate' ;;
+  sql_always_where:${brand_name} = 'NED' OR ${brand_name} = 'Grainshaker' OR ${brand_name} = '3rd Party' OR ${item_code} = 'Rebate' ;;
+  join: sales_by_state {
+    type: inner
+    foreign_key: state
+    relationship: one_to_one
+  }
   join: top_brand {
     type: inner
     foreign_key: customer_title
