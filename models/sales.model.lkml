@@ -44,6 +44,12 @@ explore: sales_by_order {
     foreign_key: fiscal_month_name_fy
     relationship: one_to_one
   }
+  join: sales_by_order_prev_3months {
+    type: left_outer
+    foreign_key: fiscal_month_name_fy
+    relationship: many_to_one
+  }
+
 }
 
 
