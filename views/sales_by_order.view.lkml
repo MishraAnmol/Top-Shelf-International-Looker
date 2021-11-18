@@ -450,6 +450,7 @@ view: sales_by_order {
     description: "Net sales values - Gross sales less discounts & rebates"
   }
 
+
   measure: net_sales_amount_format  {
     type: sum
     sql: ${net_sales_amount_aud} ;;
@@ -457,6 +458,7 @@ view: sales_by_order {
     drill_fields: [customer_details*]
     description: "Net sales values - Gross sales less discounts & rebates"
   }
+
 
   measure: abs_net_sales_amount  {
     type: sum
@@ -574,12 +576,24 @@ measure: net_sales_aud_state {
     description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
   }
 
+
+  measure: distinct_customer_count{
+    type: count_distinct
+    sql: ${customer_id} ;;
+  }
+
+  measure: distinct_customer_count_mom{
+    type: count_distinct
+    sql: ${customer_id} || ${fiscal_month_name_fy} ;;
+  }
+
   measure: c3_margin_perc  {
     sql: ${c3_margin}*100/${abs_net_sales_amount} ;;
     value_format: "0.00\%"
     drill_fields: [customer_details_all*]
     description: "Contribution Margin 2 : Net sales less Product, Excise, Freight & CDS costs"
   }
+
 
 
 }
