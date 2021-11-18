@@ -7,9 +7,9 @@ view: alm_sales_by_order {
     sql: ${TABLE}."ADJUST_NUMBER" ;;
   }
 
-  dimension: base_price {
+  dimension: base_price_per_case {
     type: number
-    sql: ${TABLE}."BASE_PRICE" ;;
+    sql: ${TABLE}."BASE_PRICE_PER_CASE" ;;
   }
 
   dimension: branch_number {
@@ -37,9 +37,68 @@ view: alm_sales_by_order {
     sql: ${TABLE}."FISCAL_YEAR" ;;
   }
 
-  dimension: fiscal_year_month {
+  dimension: fiscal_month_name_fy {
     type: string
-    sql: ${TABLE}."FISCAL_YEAR_MONTH" ;;
+    sql: ${TABLE}."FISCAL_MONTH_NAME_FY" ;;
+  }
+
+  dimension: fiscal_month_customer_sort {
+    label: "Fiscal Month (Custom Sort)"
+    case: {
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Jul' ;;
+        label: "July"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Aug' ;;
+        label: "August"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Sep' ;;
+        label: "September"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Oct' ;;
+        label: "October"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Nov' ;;
+        label: "November"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Dec' ;;
+        label: "December"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Jan' ;;
+        label: "January"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Feb' ;;
+        label: "February"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Mar' ;;
+        label: "March"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Apr' ;;
+        label: "April"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%May' ;;
+        label: "May"
+      }
+      when: {
+        sql: ${fiscal_month_name_fy} like '%Jun' ;;
+        label: "June"
+      }
+    }
+  }
+
+  dimension: fiscal_quarter_name_fy {
+    type: string
+    sql: ${TABLE}."FISCAL_QUARTER_NAME_FY" ;;
   }
 
   dimension: week_of_fiscal_year {
@@ -176,9 +235,14 @@ view: alm_sales_by_order {
     sql: ${TABLE}."QTY_SUPPLIED" ;;
   }
 
-  dimension: qty_by_case {
+  dimension: qty_supplied_by_case {
     type: number
-    sql: ${TABLE}."QTY_BY_CASE" ;;
+    sql: ${TABLE}."QTY_SUPPLIED_BY_CASE" ;;
+  }
+
+  dimension: qty_ordered_by_case {
+    type: number
+    sql: ${TABLE}."QTY_ORDERED_BY_CASE" ;;
   }
 
   dimension: source_stream {
@@ -231,9 +295,14 @@ view: alm_sales_by_order {
     sql: ${TABLE}."WET_VALUE" ;;
   }
 
-  dimension: wsale_value {
+  dimension: wsale_price {
     type: number
-    sql: ${TABLE}."WSALE_VALUE" ;;
+    sql: ${TABLE}."WSALE_PRICE" ;;
+  }
+
+  dimension: wsale_price_per_case {
+    type: number
+    sql: ${TABLE}."WSALE_PRICE_PER_CASE" ;;
   }
 
   set: alm_customer_details {
@@ -252,34 +321,47 @@ view: alm_sales_by_order {
     drill_fields: [alm_customer_details*]
   }
 
-  measure: total_qty_by_case  {
+  measure: total_qty_supplied_by_case  {
     type: sum
-    sql: ${qty_by_case} ;;
-    value_format_name: quantity_format
+    sql: ${qty_supplied_by_case} ;;
+    value_format: "#,##0"
+    drill_fields: [alm_customer_details*]
+  }
+
+  measure: total_qty_ordered_by_case  {
+    type: sum
+    sql: ${qty_ordered_by_case} ;;
+    value_format: "[>=0]#,##0.00;[<0]-#,##0.00"
     drill_fields: [alm_customer_details*]
   }
 
 
- measure: total_wsale_value {
+ measure: total_wsale_price {
     type: sum
-    sql: ${wsale_value} ;;
+    sql: ${wsale_price} ;;
     value_format_name: aud_currency_format
     drill_fields: [alm_customer_details*]
   }
 
-  measure: total_wsale_aud  {
-    type:  number
-    sql: to_number(${total_wsale_value},10,2)  ;;
-    value_format: "$0.00"
-    drill_fields: [alm_customer_details*]
-  }
-
-  measure: price_per_case {
+measure: total_base_price_per_case {
     type: sum
-    sql: case when ${qty_by_case} <> 0 then ${wsale_value}/${qty_by_case} else 0 end ;;
-    value_format_name: aud_currency_format
+    sql: ${base_price_per_case} ;;
+    value_format: "[>=0]$#,##0.00;[<0]$-#,##0.00"
     drill_fields: [alm_customer_details*]
   }
 
+measure: total_wsale_price_per_case {
+    type: sum
+    sql: ${wsale_price_per_case} ;;
+    value_format: "[>=0]$#,##0.00;[<0]$-#,##0.00"
+    drill_fields: [alm_customer_details*]
+  }
+
+measure: discount_value {
+    type: number
+    sql: ${total_base_price_per_case}-${total_wsale_price_per_case} ;;
+    value_format: "[>=0]#,##0.00;[<0]-#,##0.00"
+    drill_fields: [alm_customer_details*]
+  }
 
 }
