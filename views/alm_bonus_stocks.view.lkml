@@ -30,28 +30,28 @@ view: alm_bonus_stocks {
     sql: ${TABLE}."GROUP_NAME" ;;
   }
 
-  dimension: bonus_stocks_supplied {
+  dimension: bonus_stocks_cases {
     type: number
     sql: ${TABLE}."BONUS_STOCKS_SUPPLIED" ;;
   }
 
-  dimension: products_qty_supplied {
+  dimension: regular_stocks_cases {
     type: number
     sql: ${TABLE}."PRODUCTS_QTY_SUPPLIED" ;;
   }
 
   measure: stock_difference {
     type: number
-    sql: ${products_qty_supplied} - ${bonus_stocks_supplied} ;;
+    sql: ${regular_stocks_cases} - ${bonus_stocks_cases} ;;
   }
 
   measure: stock_trends{
     type: number
-    sql: case when ${products_qty_supplied} = 0 then 0 else ${stock_difference}/ ${products_qty_supplied} end;;
+    sql: case when ${regular_stocks_cases} = 0 then 0 else ${stock_difference}/ ${regular_stocks_cases} end;;
     value_format: "0%"
   }
 
   set: detail {
-    fields: [product_description, outlet_name, group_name, bonus_stocks_supplied, products_qty_supplied]
+    fields: [product_description, outlet_name, group_name, bonus_stocks_cases, regular_stocks_cases]
   }
 }
