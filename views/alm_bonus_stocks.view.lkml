@@ -45,6 +45,12 @@ view: alm_bonus_stocks {
     sql: ${products_qty_supplied} - ${bonus_stocks_supplied} ;;
   }
 
+  measure: stock_trends{
+    type: number
+    sql: case when ${products_qty_supplied} = 0 then 0 else ${stock_difference}/ ${products_qty_supplied} end;;
+    value_format: "0%"
+  }
+
   set: detail {
     fields: [product_description, outlet_name, group_name, bonus_stocks_supplied, products_qty_supplied]
   }
