@@ -339,7 +339,7 @@ view: alm_sales_by_order {
  measure: total_wsale_price {
     type: sum
     sql: ${wsale_price} ;;
-    value_format_name: aud_currency_format
+    value_format: "[>=0]$#,##0.00;[<0]$-#,##0.00"
     drill_fields: [alm_customer_details*]
   }
 
@@ -361,6 +361,13 @@ measure: discount_value {
     type: number
     sql: ${total_base_price_per_case}-${total_wsale_price_per_case} ;;
     value_format: "[>=0]#,##0.00;[<0]-#,##0.00"
+    drill_fields: [alm_customer_details*]
+  }
+
+  measure: discount_perc {
+    type: number
+    sql: case when ${total_base_price_per_case} = 0 then 0 else ${discount_value} /${total_base_price_per_case} end ;;
+    value_format: "0%"
     drill_fields: [alm_customer_details*]
   }
 
