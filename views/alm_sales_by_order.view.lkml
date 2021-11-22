@@ -275,6 +275,11 @@ view: alm_sales_by_order {
     sql: ${TABLE}."TRANS_DATE" ;;
   }
 
+  dimension: is_before_mtd {
+    type: yesno
+    sql: EXTRACT(DAY FROM ${trans_raw}) <= EXTRACT(DAY FROM current_date);;
+  }
+
   dimension: trans_type {
     type: string
     sql: ${TABLE}."TRANS_TYPE" ;;
@@ -328,6 +333,14 @@ view: alm_sales_by_order {
     drill_fields: [alm_customer_details*]
   }
 
+  measure: total_qty_supplied_by_case_format  {
+    type: sum
+    sql: ${qty_supplied_by_case} ;;
+    html: @{margin_values_format}  ;;
+    drill_fields: [alm_customer_details*]
+  }
+
+
   measure: total_qty_ordered_by_case  {
     type: sum
     sql: ${qty_ordered_by_case} ;;
@@ -339,7 +352,14 @@ view: alm_sales_by_order {
  measure: total_wsale_price {
     type: sum
     sql: ${wsale_price} ;;
-    value_format: "[>=0]$#,##0.00;[<0]$-#,##0.00"
+    value_format: "$#,##0.00"
+    drill_fields: [alm_customer_details*]
+  }
+
+  measure: total_wsale_price_format {
+    type: sum
+    sql: ${wsale_price} ;;
+    html: @{aud_currency_format}  ;;
     drill_fields: [alm_customer_details*]
   }
 
