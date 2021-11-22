@@ -215,6 +215,16 @@ view: alm_sales_by_order {
     sql: ${TABLE}."PRODUCT_DESCRIPTION" ;;
   }
 
+  dimension: product_brand {
+    type: string
+    sql: ${TABLE}."PRODUCT_BRAND" ;;
+  }
+
+  dimension: product_group {
+    type: string
+    sql: ${TABLE}."PRODUCT_GROUP" ;;
+  }
+
   dimension: product_tun {
     type: string
     sql: ${TABLE}."PRODUCT_TUN" ;;
