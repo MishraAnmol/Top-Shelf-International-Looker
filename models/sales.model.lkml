@@ -73,9 +73,4 @@ explore: alm_sales_by_order {
     foreign_key: outlet_name
     relationship: one_to_one
   }
-  join: alm_bonus_stocks {
-    type: inner
-    foreign_key: outlet_name
-    relationship: one_to_one
-  }
 }
