@@ -52,13 +52,17 @@ explore: sales_by_order {
   }
   join: sales_by_order_prev_3months {
     type: left_outer
-    foreign_key: fiscal_month_name_fy
+    #foreign_key: fiscal_month_name_fy
     relationship: many_to_one
+    sql_on: ${sales_by_order.brand_name} = ${sales_by_order_prev_3months.brand_name}
+    and ${sales_by_order.fiscal_month_name_fy} = ${sales_by_order_prev_3months.fiscal_month_name_fy};;
   }
   join: sales_by_order_customer_count {
     type: left_outer
-    foreign_key: fiscal_month_name_fy
+    #foreign_key: fiscal_month_name_fy
     relationship: many_to_one
+    sql_on: ${sales_by_order.brand_name} = ${sales_by_order_customer_count.brand_name}
+    and ${sales_by_order.fiscal_month_name_fy} = ${sales_by_order_customer_count.fiscal_month_name_fy};;
   }
 }
 
