@@ -12,6 +12,11 @@ view: alm_sales_by_order {
     sql: ${TABLE}."BASE_PRICE_PER_CASE" ;;
   }
 
+  dimension: total_base_price_dim {
+    type: number
+    sql: ${TABLE}."TOTAL_BASE_PRICE" ;;
+  }
+
   dimension: branch_number {
     type: number
     sql: ${TABLE}."BRANCH_NUMBER" ;;
@@ -310,9 +315,9 @@ view: alm_sales_by_order {
     sql: ${TABLE}."WET_VALUE" ;;
   }
 
-  dimension: wsale_price {
+  dimension: total_wsale_price {
     type: number
-    sql: ${TABLE}."WSALE_PRICE" ;;
+    sql: ${TABLE}."TOTAL_WSALE_PRICE" ;;
   }
 
   dimension: wsale_price_per_case {
@@ -321,7 +326,7 @@ view: alm_sales_by_order {
   }
 
   set: alm_customer_details {
-    fields: []
+    fields: [outlet_name, outlet_state, product_group, product_code, product_description, qty_supplied, qty_supplied_by_case, bonus_stock_cases, wsale_price_per_case]
   }
 
   measure: count {
@@ -350,6 +355,45 @@ view: alm_sales_by_order {
     drill_fields: [alm_customer_details*]
   }
 
+  measure: purchased_cases {
+    type: sum
+    sql: CASE WHEN ((${TABLE}."ORDER_TYPE") <> 'B' OR (${TABLE}."ORDER_TYPE") IS NULL) THEN ( ${TABLE}."QTY_SUPPLIED_BY_CASE"  )  ELSE 0 END ;;
+    value_format: "#,##0"
+    drill_fields: [alm_customer_details*]
+  }
+
+  measure: purchased_cases_price {
+    type: sum
+    sql: CASE WHEN ((${TABLE}."ORDER_TYPE") <> 'B' OR (${TABLE}."ORDER_TYPE") IS NULL) THEN ( ${TABLE}."TOTAL_WSALE_PRICE"  )  ELSE 0 END ;;
+    value_format: "$#,##0.00"
+    drill_fields: [alm_customer_details*]
+  }
+
+  measure: bonus_stock_cases {
+    type: sum
+    sql: CASE WHEN ((${TABLE}."ORDER_TYPE") = 'B') THEN ( ${TABLE}."QTY_SUPPLIED_BY_CASE"  )  ELSE 0 END ;;
+    value_format: "#,##0"
+    drill_fields: [alm_customer_details*]
+  }
+
+  measure: bonus_stock_price {
+    type: sum
+    sql: CASE WHEN ((${TABLE}."ORDER_TYPE") = 'B') THEN ( ${TABLE}."TOTAL_BASE_PRICE"  )  ELSE 0 END ;;
+    value_format: "$#,##0.00"
+    drill_fields: [alm_customer_details*]
+  }
+
+  measure: bonus_case_perc {
+    type: number
+    sql: ${bonus_stock_cases}/(${bonus_stock_cases}+${purchased_cases});;
+    value_format: "###.00"
+    drill_fields: [alm_customer_details*]
+  }
+
+  measure: this_or_that {
+    type: yesno
+    sql: ((${purchased_cases}+${bonus_stock_cases})>=50 OR ${bonus_stock_cases}>=10) AND ${bonus_case_perc}>=0.05;;
+}
 
   measure: total_qty_ordered_by_case  {
     type: sum
@@ -358,27 +402,27 @@ view: alm_sales_by_order {
     drill_fields: [alm_customer_details*]
   }
 
-
- measure: total_wsale_price {
+ measure: total_sale_price {
     type: sum
-    sql: ${wsale_price} ;;
+    sql: ${total_wsale_price} ;;
     value_format: "$#,##0.00"
     drill_fields: [alm_customer_details*]
   }
 
-  measure: total_wsale_price_format {
+  measure: total_sale_price_format {
     type: sum
-    sql: ${wsale_price} ;;
+    sql: ${total_wsale_price} ;;
     html: @{aud_currency_format}  ;;
     drill_fields: [alm_customer_details*]
   }
 
-measure: total_base_price_per_case {
+measure: total_base_price {
     type: sum
-    sql: ${base_price_per_case} ;;
+    sql: ${total_base_price_dim} ;;
     value_format: "[>=0]$#,##0.00;[<0]$-#,##0.00"
     drill_fields: [alm_customer_details*]
   }
+
 
 measure: total_wsale_price_per_case {
     type: sum
@@ -387,17 +431,24 @@ measure: total_wsale_price_per_case {
     drill_fields: [alm_customer_details*]
   }
 
-measure: discount_value {
+measure: adjusted_sale_price {
     type: number
-    sql: ${total_base_price_per_case}-${total_wsale_price_per_case} ;;
+    sql: ${purchased_cases_price}-${bonus_stock_price} ;;
     value_format: "[>=0]#,##0.00;[<0]-#,##0.00"
     drill_fields: [alm_customer_details*]
   }
 
-  measure: discount_perc {
+  measure: price_variance {
     type: number
-    sql: case when ${total_base_price_per_case} = 0 then 0 else ${discount_value} /${total_base_price_per_case} end ;;
-    value_format: "0%"
+    sql: ${total_base_price}-${adjusted_sale_price};;
+    value_format: "#,##0.00"
+    drill_fields: [alm_customer_details*]
+  }
+
+  measure: price_variance_perc {
+    type: number
+    sql: case when ${total_base_price} = 0 then 0 else (${total_base_price}-${adjusted_sale_price})/${total_base_price} end;;
+    value_format: "###.00"
     drill_fields: [alm_customer_details*]
   }
 
