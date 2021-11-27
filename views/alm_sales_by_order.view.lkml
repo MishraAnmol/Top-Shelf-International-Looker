@@ -102,7 +102,7 @@ view: alm_sales_by_order {
   }
 
   dimension: week_of_fiscal_year {
-    type: string
+    type: number
     sql: ${TABLE}."WEEK_OF_FISCAL_YEAR" ;;
   }
 
